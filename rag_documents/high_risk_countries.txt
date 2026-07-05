@@ -1,0 +1,63 @@
+HIGH-RISK COUNTRIES AND THEIR RISK FACTORS — INTERNAL RISK MEMO
+================================================================
+Classification: INTERNAL — Risk Management Division
+Effective Date: January 2025
+Review Cycle: Quarterly
+
+OVERVIEW
+--------
+This memo outlines the risk classification framework for countries where FinPulse AI clients maintain significant transaction exposure. Country risk scores are computed on a 1–10 scale using a weighted composite of six factors: regulatory environment (20%), political stability (15%), financial transparency (20%), sanctions exposure (15%), historical fraud incidence (15%), and AML enforcement strength (15%).
+
+TIER 1 — ELEVATED RISK (Score 7.0–10.0)
+-----------------------------------------
+1. Nigeria (Score: 8.7)
+   - Primary Risks: Business Email Compromise (BEC) originating from Lagos and Abuja regions; advance-fee fraud; identity theft rings
+   - Transaction Red Flags: Wire transfers between $5,000–$25,000 to newly opened accounts; frequent transfers to multiple beneficiaries within 72-hour windows
+   - Regulatory Gap: Limited cross-border enforcement cooperation; Financial Action Task Force (FATF) grey list status as of 2024
+
+2. Myanmar (Score: 9.1)
+   - Primary Risks: State-affiliated entities under OFAC sanctions; illicit jade and gem trade used for laundering; crypto-to-fiat conversion pipelines
+   - Transaction Red Flags: Any transaction involving Myanma Economic Bank or entities in Shan State; amounts exceeding $10,000 routed through Singapore intermediaries
+   - Regulatory Gap: Central bank oversight severely impaired since 2021; no functioning SAR filing mechanism
+
+3. Iran (Score: 9.5)
+   - Primary Risks: Comprehensive OFAC sanctions; SWIFT disconnection workarounds via third-country correspondents; trade-based money laundering through UAE free zones
+   - Transaction Red Flags: Transactions with companies registered in Kish Island Free Zone; oil-related payments routed through Turkish or Omani banks
+   - Regulatory Gap: No bilateral enforcement treaty with US/EU jurisdictions
+
+4. Russia (Score: 8.9)
+   - Primary Risks: Expanding sanctions regime post-2022; capital flight through cryptocurrency; structured deposits in Central Asian banks
+   - Transaction Red Flags: Payments to entities in Uzbekistan, Kazakhstan, or Kyrgyzstan with no clear commercial purpose; round-dollar wire transfers exceeding $50,000
+
+TIER 2 — MODERATE-HIGH RISK (Score 5.0–6.9)
+---------------------------------------------
+5. China (Score: 6.3)
+   - Primary Risks: Unreported capital outflows; underground banking (fei-ch'ien); trade invoice manipulation for capital movement
+   - Transaction Red Flags: Over-invoicing on import transactions; back-to-back letters of credit with no physical goods movement
+   - Mitigants: Strong domestic AML framework (PBOC); improving FATF mutual evaluation results
+
+6. Brazil (Score: 5.8)
+   - Primary Risks: Corruption-linked funds; informal value transfer (doleiros); Pix system fraud
+   - Transaction Red Flags: Rapid succession of Pix-equivalent transfers under reporting thresholds; payments to entities in border cities (Foz do Iguaçu, Ciudad del Este corridor)
+
+7. United Arab Emirates (Score: 5.5)
+   - Primary Risks: Trade-based laundering through free zones (JAFZA, DAFZ); real estate laundering; gold trade manipulation
+   - Transaction Red Flags: Cash-intensive transactions with DMCC-registered entities; property purchases by shell companies
+
+TIER 3 — MODERATE RISK (Score 3.0–4.9)
+----------------------------------------
+8. India (Score: 4.2)
+   - Improving regulatory framework under PMLA amendments; growing UPI ecosystem reduces cash-based risks
+   - Watch Areas: Hawala networks in specific corridors; shell company incorporation in certain states
+
+9. Singapore (Score: 3.5)
+   - Strong MAS oversight; however, recent large-scale money laundering cases have raised concerns about wealth management sector oversight
+   - Watch Areas: Family office structures; high-value asset transactions
+
+ESCALATION PROCEDURES
+---------------------
+- Tier 1 countries: Automatic hold on transactions > $5,000; requires Level 2 analyst review within 4 hours
+- Tier 2 countries: Enhanced Due Diligence (EDD) required for new relationships; transaction monitoring threshold lowered to $10,000
+- Tier 3 countries: Standard monitoring with quarterly portfolio review
+
+Contact: risk-intelligence@finpulse.internal

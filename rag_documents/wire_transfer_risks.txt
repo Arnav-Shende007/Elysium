@@ -1,0 +1,71 @@
+WIRE TRANSFER RISK INDICATORS — INTERNAL RISK MEMO
+====================================================
+Classification: INTERNAL — Payment Operations & Compliance
+Effective Date: March 2025
+Scope: All domestic and cross-border wire transfers processed through FinPulse systems
+
+OVERVIEW
+--------
+Wire transfers remain the highest-risk payment channel due to speed of settlement, difficulty of reversal, and cross-jurisdictional complexity. This memo establishes the risk indicator framework for automated monitoring and manual review of wire transfer activity.
+
+RISK INDICATOR CATEGORY 1: AMOUNT-BASED TRIGGERS
+---------------------------------------------------
+- Single wire ≥ $50,000 to a new beneficiary (first-time relationship)
+- Aggregate outgoing wires ≥ $100,000 in a 7-day rolling window
+- Wire amount exceeds 3x the customer's historical average wire amount
+- Wire amount represents ≥ 60% of current account balance
+- Multiple wires of $9,500–$9,999 within 5 business days (structuring indicator)
+
+Severity Scoring:
+  - 1 trigger: LOW (score 2.0) — log and monitor
+  - 2 triggers: MEDIUM (score 5.0) — queue for next-day review
+  - 3+ triggers: HIGH (score 8.5) — real-time alert to compliance analyst
+
+RISK INDICATOR CATEGORY 2: BENEFICIARY-BASED TRIGGERS
+-------------------------------------------------------
+- Beneficiary bank located in FATF grey-list or black-list jurisdiction
+- Beneficiary account opened within past 30 days
+- Beneficiary name contains known shell company indicators (e.g., "Holdings Ltd", "Trading Corp", "Global Enterprises" with no web presence)
+- Same beneficiary receiving wires from 3+ unrelated originators within 30 days
+- Beneficiary account has received and immediately forwarded funds (pass-through behavior with <24-hour hold time)
+
+Severity Scoring:
+  - FATF grey-list destination: Automatic MEDIUM (score 5.5)
+  - FATF black-list destination: Automatic HIGH (score 9.0) + analyst alert
+  - Pass-through pattern detected: HIGH (score 8.0) + SAR consideration
+
+RISK INDICATOR CATEGORY 3: BEHAVIORAL TRIGGERS
+------------------------------------------------
+- Wire initiated outside customer's normal business hours (based on 90-day profile)
+- Wire instruction submitted via a channel the customer has never previously used
+- Multiple wires to different beneficiaries within the same 60-minute session
+- Customer requests expedited processing with no clear business justification
+- Wire instruction contains vague purpose codes ("miscellaneous", "personal", "other")
+
+Severity Scoring:
+  - Off-hours initiation alone: LOW (score 1.5)
+  - New channel + off-hours: MEDIUM (score 4.5)
+  - Multiple same-session wires + vague purpose: HIGH (score 7.5)
+
+RISK INDICATOR CATEGORY 4: CORRIDOR-SPECIFIC TRIGGERS
+-------------------------------------------------------
+High-risk corridors requiring Enhanced Due Diligence (EDD):
+  - US → Nigeria: Threshold lowered to $3,000
+  - US → UAE (free zone entities): Threshold lowered to $10,000
+  - UK → Russia (via third country): Any amount triggers review
+  - Singapore → Myanmar: Any amount triggers review
+  - Any jurisdiction → Iran: Blocked per sanctions program
+
+AUTOMATED RESPONSE MATRIX
+--------------------------
+Risk Score 0–3.0: Process normally, log for batch review
+Risk Score 3.1–5.0: Process with 4-hour review window; analyst can reverse within window
+Risk Score 5.1–7.5: Hold pending analyst approval (target: 2-hour SLA)
+Risk Score 7.6–10.0: Block transaction; immediate escalation to BSA Officer; 24-hour SAR decision required
+
+EXCEPTIONS
+----------
+- Pre-approved recurring wires (e.g., payroll, vendor payments with established pattern) may receive a -2.0 score adjustment
+- VIP/institutional accounts with enhanced KYC may receive a -1.5 adjustment (requires annual recertification)
+
+Contact: wire-compliance@finpulse.internal

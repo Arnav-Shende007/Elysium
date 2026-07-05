@@ -1,0 +1,11 @@
+FINTECH DISRUPTION RESHAPES CROSS-BORDER PAYMENTS
+===================================================
+Financial Markets Weekly — January 12, 2025
+
+A new wave of fintech platforms is fundamentally altering the economics of international money transfers, putting pressure on traditional correspondent banking networks and raising questions about regulatory oversight in an increasingly fragmented payments landscape.
+
+The shift has been accelerating since mid-2024, when several major digital payment providers began offering real-time cross-border transfers at fees below 0.5% — a fraction of the 3–5% typically charged by legacy bank wire systems. Industry analysts estimate that non-bank fintech platforms now handle approximately 22% of retail cross-border payment volume, up from 11% just two years ago. For small and medium enterprises, the share is even higher, reaching 35% in high-volume corridors such as US-Mexico and UK-India.
+
+The impact on traditional financial institutions has been significant. Several mid-tier banks have reported declining wire transfer revenue, with one European bank disclosing a 28% year-over-year decline in cross-border payment fees during its Q3 2024 earnings call. In response, a consortium of twelve global banks announced a blockchain-based settlement initiative aimed at reducing cross-border transaction times from 2–3 business days to under 4 hours, with target fees of 0.8%. The platform is expected to launch in pilot form by Q3 2025, initially covering USD, EUR, GBP, and SGD corridors.
+
+Regulators are responding with a mix of support and caution. The Financial Stability Board published a progress report in December 2024 noting that while faster payments benefit consumers and businesses, the rapid growth of non-bank payment providers creates potential gaps in AML oversight. Specifically, the report highlighted that transaction monitoring capabilities at newer fintech platforms often lack the sophistication of established banks, creating potential blind spots for illicit fund flows. Several jurisdictions, including Singapore, the UK, and the EU, are developing enhanced licensing frameworks for digital payment institutions that would impose bank-equivalent KYC and transaction monitoring requirements by 2026.

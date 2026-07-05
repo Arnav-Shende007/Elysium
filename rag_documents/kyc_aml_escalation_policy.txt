@@ -1,0 +1,118 @@
+KYC/AML ESCALATION POLICY — INTERNAL POLICY DOCUMENT
+======================================================
+Document ID: POL-KYC-2025-002
+Classification: INTERNAL — Compliance Division
+Effective Date: January 1, 2025
+Review Date: July 1, 2025
+Approved by: Chief Compliance Officer, BSA Officer
+
+1. PURPOSE
+----------
+This policy defines the escalation framework for Know Your Customer (KYC) and Anti-Money Laundering (AML) issues identified during customer onboarding, periodic reviews, and transaction monitoring. It ensures consistent, timely, and well-documented escalation of potential compliance risks across all business lines.
+
+2. ESCALATION TIERS
+---------------------
+
+TIER 1: STANDARD ESCALATION (Response: 5 business days)
+  Triggers:
+  - Incomplete or inconsistent customer identification documents
+  - Minor discrepancies in beneficial ownership declarations (e.g., percentage differences < 5%)
+  - Customer's industry classification changes to a higher-risk category
+  - Negative news screening returns results with low relevance score (< 60%)
+  
+  Actions:
+  - Relationship Manager sends KYC remediation request to customer
+  - 30-day cure period for document submission
+  - If unresolved after 30 days, auto-escalate to Tier 2
+  
+  Decision Authority: Level 1 KYC Analyst
+
+TIER 2: ENHANCED ESCALATION (Response: 48 hours)
+  Triggers:
+  - Customer unable or unwilling to provide source of funds documentation
+  - Beneficial ownership cannot be verified through independent sources
+  - Negative news screening returns results with moderate relevance (60–80%)
+  - Customer's transaction activity materially deviates from stated business purpose
+  - PEP (Politically Exposed Person) status identified or changed
+  - Customer operating in FATF grey-list jurisdiction
+  
+  Actions:
+  - Enhanced Due Diligence (EDD) review initiated
+  - Senior analyst reviews full customer file, transaction history (12 months), and all prior alerts
+  - EDD report prepared with risk assessment and recommendation
+  - Customer relationship placed on "enhanced monitoring" pending resolution
+  
+  Decision Authority: Level 2 KYC Analyst + Compliance Manager sign-off
+
+TIER 3: CRITICAL ESCALATION (Response: 24 hours)
+  Triggers:
+  - Sanctions match confirmed (OFAC, EU, UN)
+  - Customer identified as agent of a sanctioned entity or government
+  - Negative news screening returns high-relevance results (> 80%) involving financial crime, terrorism, or trafficking
+  - Law enforcement inquiry or subpoena received regarding customer
+  - Customer attempts to close account and withdraw all funds immediately after receiving KYC request
+  - Internal fraud or collusion suspected involving bank employee
+  
+  Actions:
+  - Immediate transaction freeze on all customer accounts
+  - BSA Officer notified within 2 hours
+  - Legal counsel engaged for sanctions matches or law enforcement matters
+  - SAR filing decision within 24 hours
+  - If sanctions confirmed: Account blocked; OFAC reported within 10 business days
+  
+  Decision Authority: BSA Officer + Legal Counsel + Chief Compliance Officer
+
+TIER 4: EXECUTIVE ESCALATION (Response: Same day)
+  Triggers:
+  - Systemic compliance failure identified (e.g., monitoring system gap affecting multiple customers)
+  - Regulatory examination finding requiring immediate remediation
+  - Media exposure risk related to customer relationship
+  - Correspondent banking relationship flagged by upstream/downstream bank
+  
+  Actions:
+  - Executive Compliance Committee convened (CCO, General Counsel, CRO, CEO)
+  - External counsel engaged if regulatory action anticipated
+  - Board Risk Committee notified if potential financial impact exceeds $5 million
+  - Regulatory self-disclosure evaluated
+  
+  Decision Authority: Executive Compliance Committee
+
+3. PERIODIC REVIEW SCHEDULE
+-----------------------------
+Customer Risk Rating    | Review Frequency | EDD Required
+High Risk               | Annual           | Yes
+Medium Risk             | Biennial         | Trigger-based
+Low Risk                | Triennial        | No
+PEP (any risk level)    | Annual           | Yes
+Correspondent Banks     | Annual           | Yes
+
+4. DOCUMENTATION REQUIREMENTS
+-------------------------------
+All escalations must include:
+  - Customer identification details and risk rating
+  - Description of triggering event with supporting evidence
+  - Timeline of actions taken
+  - Analyst assessment and recommendation
+  - Decision rationale (approve, restrict, exit, report)
+  - Supervisor sign-off with date
+
+Documentation retention: Minimum 7 years from account closure or escalation resolution, whichever is later.
+
+5. CUSTOMER EXIT PROCEDURES
+-----------------------------
+When a decision is made to exit a customer relationship:
+  - 30-day notice provided (unless immediate exit required for sanctions/law enforcement)
+  - All pending transactions reviewed and processed or returned
+  - Account closure documented with full rationale
+  - Customer added to internal "Do Not Onboard" list
+  - SAR filed if suspicious activity was the basis for exit
+  - No tipping off: Customer must NOT be informed that a SAR has been filed
+
+6. TRAINING
+-----------
+  - All customer-facing staff: Annual KYC/AML awareness training (2 hours)
+  - KYC analysts: Quarterly specialized training on emerging typologies (4 hours)
+  - Compliance officers: Annual regulatory update seminar + external conference attendance
+  - Training completion tracked; non-completion escalated to line manager after 14 days
+
+Contact: kyc-compliance@finpulse.internal

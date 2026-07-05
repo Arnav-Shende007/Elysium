@@ -1,0 +1,87 @@
+CREDIT RISK WARNING SIGNS — INTERNAL RISK MEMO
+================================================
+Classification: INTERNAL — Credit Risk Management
+Effective Date: January 2025
+Audience: Relationship Managers, Credit Analysts, Portfolio Managers
+
+OVERVIEW
+--------
+This memo identifies early warning signs of credit deterioration across FinPulse AI's lending portfolio. Timely identification of these signals enables proactive risk mitigation, including covenant renegotiation, collateral revaluation, or exposure reduction, before losses crystallize.
+
+CATEGORY 1: FINANCIAL STATEMENT INDICATORS
+--------------------------------------------
+1. Revenue Decline Without Cost Adjustment
+   - Revenue decrease >10% YoY without corresponding reduction in operating expenses
+   - Indicates margin compression and potential cash flow deterioration
+   - Watch threshold: EBITDA margin contraction >300bps in two consecutive quarters
+
+2. Working Capital Deterioration
+   - Days Sales Outstanding (DSO) increasing by >15 days compared to trailing 4-quarter average
+   - Inventory turnover declining below industry median
+   - Accounts payable extending beyond standard terms (stretching suppliers)
+   - Combined signal: Cash conversion cycle lengthening by >20 days suggests liquidity stress
+
+3. Leverage Escalation
+   - Debt/EBITDA ratio exceeding covenant threshold by <0.5x (approaching breach)
+   - Interest coverage ratio (EBITDA/Interest) declining below 2.0x
+   - Net debt increasing while EBITDA remains flat or declines
+   - New debt issuance at significantly higher spreads (>150bps above previous issuance)
+
+4. Cash Flow Divergence
+   - Net income positive but operating cash flow negative for 2+ consecutive quarters
+   - Indicates aggressive revenue recognition or working capital consumption
+   - Free cash flow insufficient to cover debt service obligations
+
+CATEGORY 2: BEHAVIORAL AND OPERATIONAL INDICATORS
+---------------------------------------------------
+5. Payment Pattern Changes
+   - Historically prompt payer begins requesting extended payment terms
+   - Partial payments on loan installments (paying interest but not principal)
+   - Requests for covenant waiver or amendment outside normal review cycle
+   - Increased frequency of overdraft utilization on revolving facilities
+
+6. Management Red Flags
+   - CFO departure or replacement with no public succession plan
+   - Auditor change, especially from Big 4 to smaller firm
+   - Qualified audit opinion or material weakness disclosure
+   - Sudden changes in accounting policies (e.g., revenue recognition method)
+   - Board member resignations (especially independent directors)
+
+7. Operational Distress Signals
+   - Key customer concentration >30% with that customer also showing stress
+   - Supplier disputes or supply chain disruptions reported in trade press
+   - Regulatory investigation or enforcement action disclosed
+   - Significant litigation with potential liability exceeding 10% of equity
+
+CATEGORY 3: MARKET AND EXTERNAL INDICATORS
+--------------------------------------------
+8. Credit Market Signals
+   - CDS spread widening >100bps in 30-day period
+   - Bond price decline >5% without sector-wide movement
+   - Rating agency downgrade or negative outlook change
+   - Inability to roll over commercial paper at maturity
+
+9. Industry Stress
+   - Sector-wide margin compression due to commodity price shifts
+   - Regulatory changes increasing compliance costs (e.g., new capital requirements)
+   - Technological disruption rendering borrower's business model obsolete
+   - Competitor bankruptcies or restructurings in same subsector
+
+RISK SCORING FRAMEWORK
+-----------------------
+Each warning sign detected adds to the borrower's credit risk score:
+  - Category 1 indicators: +2.0 per indicator
+  - Category 2 indicators: +1.5 per indicator
+  - Category 3 indicators: +1.0 per indicator
+
+Action Thresholds:
+  - Score 3.0–5.0: Add to watchlist; increase monitoring frequency to monthly
+  - Score 5.1–8.0: Classify as Special Mention; initiate relationship review
+  - Score 8.1–12.0: Classify as Substandard; engage workout team
+  - Score >12.0: Classify as Doubtful; initiate loss provisioning
+
+ESCALATION
+----------
+Any borrower reaching Score 5.0+ must be reported to the Credit Risk Committee within 5 business days with a recommended action plan.
+
+Contact: credit-risk@finpulse.internal

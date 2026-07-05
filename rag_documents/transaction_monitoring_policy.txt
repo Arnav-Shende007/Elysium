@@ -1,0 +1,90 @@
+TRANSACTION MONITORING POLICY — INTERNAL POLICY DOCUMENT
+==========================================================
+Document ID: POL-TM-2025-001
+Classification: INTERNAL — Compliance Division
+Effective Date: January 1, 2025
+Review Date: July 1, 2025
+Approved by: Chief Compliance Officer
+
+1. PURPOSE
+----------
+This policy establishes the framework for monitoring financial transactions processed through FinPulse AI systems to detect, investigate, and report suspicious activity in compliance with the Bank Secrecy Act (BSA), USA PATRIOT Act, and applicable international anti-money laundering (AML) regulations.
+
+2. SCOPE
+--------
+This policy applies to all transactions processed across all channels (wire transfer, ACH, card payments, internal transfers, loan disbursements, and investment transactions) for all customer segments (retail, commercial, institutional, and correspondent banking).
+
+3. MONITORING FRAMEWORK
+-------------------------
+
+3.1 Real-Time Monitoring
+  - All transactions are screened in real-time against:
+    a) OFAC Specially Designated Nationals (SDN) list
+    b) EU Consolidated Sanctions List
+    c) UN Security Council Sanctions List
+    d) Internal watchlists (updated weekly by Financial Intelligence Unit)
+  - Match threshold: Fuzzy matching score ≥ 85% triggers automatic hold
+  - Hold resolution SLA: 4 hours for exact match; 8 hours for fuzzy match
+
+3.2 Rules-Based Monitoring
+  - 147 active monitoring rules across 12 typology categories
+  - Rules are calibrated quarterly based on false positive rates and detection effectiveness
+  - Key rule categories:
+    a) Structuring detection (CTR avoidance patterns)
+    b) Rapid movement of funds (velocity analysis)
+    c) Geographic risk correlation (high-risk jurisdiction transactions)
+    d) Peer group anomaly detection (deviation from customer segment norms)
+    e) Dormant account reactivation
+    f) Round-trip transaction patterns
+  - Target false positive rate: < 85% (current: 78%)
+  - Rule tuning committee meets monthly to adjust thresholds
+
+3.3 Machine Learning Models
+  - Supervised model: Gradient boosted classifier trained on historical SAR data
+    - Features: 42 transaction attributes, 15 customer profile attributes, 8 behavioral attributes
+    - Model performance: AUC-ROC 0.92; refreshed quarterly with new labeled data
+  - Unsupervised model: Isolation forest for anomaly detection on transaction networks
+    - Identifies unusual connectivity patterns between accounts
+    - Generates supplemental alerts for analyst review
+  - Model governance: All models undergo annual validation by independent model risk team
+
+4. ALERT MANAGEMENT
+--------------------
+
+4.1 Alert Prioritization
+  - Priority 1 (CRITICAL): Sanctions match, terrorism financing indicators, law enforcement request
+    → SLA: 2-hour initial review; same-day escalation decision
+  - Priority 2 (HIGH): Multiple rule triggers on same entity, ML model high-confidence alert
+    → SLA: 24-hour initial review; 3-day disposition
+  - Priority 3 (MEDIUM): Single rule trigger, moderate ML confidence
+    → SLA: 48-hour initial review; 5-day disposition
+  - Priority 4 (LOW): Single rule trigger below threshold, peer group deviation
+    → SLA: 5-day initial review; 10-day disposition
+
+4.2 Investigation Workflow
+  Step 1: Alert triage — Confirm data quality, verify customer identity
+  Step 2: Activity analysis — Review 90-day transaction history, identify patterns
+  Step 3: Customer context — Check KYC file, prior SARs, relationship history
+  Step 4: Determination — Escalate, file SAR, close with documentation, or request EDD
+  Step 5: Documentation — Record investigation narrative, evidence, and rationale
+
+4.3 Staffing
+  - Transaction monitoring team: 24 Level 1 analysts, 8 Level 2 analysts, 3 Level 3 investigators
+  - Average alert volume: 1,200 alerts/day
+  - Target analyst productivity: 18–22 alerts/analyst/day (Level 1), 6–8 cases/analyst/day (Level 2)
+
+5. REPORTING OBLIGATIONS
+--------------------------
+  - Suspicious Activity Reports (SARs): Filed within 30 calendar days of determination
+  - Currency Transaction Reports (CTRs): Automated filing for cash transactions ≥ $10,000
+  - 314(a) requests: Response within 14 days of receipt
+  - Regulatory examinations: All monitoring data retained for 7 years minimum
+
+6. QUALITY ASSURANCE
+---------------------
+  - Monthly sample review: 5% of closed alerts reviewed by QA team
+  - Quarterly look-back: Review of all accounts with >3 closed alerts to identify missed patterns
+  - Annual independent testing: Conducted by Internal Audit or external consultant
+  - Deficiency remediation SLA: 30 days for procedural gaps, 90 days for system enhancements
+
+Contact: compliance-monitoring@finpulse.internal
