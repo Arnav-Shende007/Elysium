@@ -11,18 +11,27 @@ GCP Config:
     PROJECT_ID = "elysium-501518"
 """
 
+import google.auth
+
 # ──────────────────────────────────────────────
 # INSTALL RAPIDS cuDF (Colab doesn't have it pre-installed)
 # ──────────────────────────────────────────────
-import subprocess
-print("=" * 60)
-print("STEP 0: Installing RAPIDS cuDF for GPU acceleration...")
-print("=" * 60)
-subprocess.run(
-    ["pip", "install", "cudf-cu12", "--extra-index-url=https://pypi.nvidia.com", "--break-system-packages"],
-    check=True,
-)
-print("✅ cuDF installed successfully")
+try:
+    from google.colab import auth
+    IN_COLAB = True
+except ImportError:
+    IN_COLAB = False
+
+if IN_COLAB:
+    import subprocess
+    print("=" * 60)
+    print("STEP 0: Installing RAPIDS cuDF for GPU acceleration...")
+    print("=" * 60)
+    subprocess.run(
+        ["pip", "install", "cudf-cu12", "--extra-index-url=https://pypi.nvidia.com", "--break-system-packages"],
+        check=True,
+    )
+    print("✅ cuDF installed successfully")
 
 # ──────────────────────────────────────────────
 # ENABLE cuDF-accelerated pandas
@@ -36,9 +45,14 @@ import time
 import pandas as pd
 
 # ──────────────────────────────────────────────
-# CONFIG
+# CONFIG / GCP PROJECT RESOLUTION
 # ──────────────────────────────────────────────
-PROJECT_ID = "elysium-501518"
+try:
+    _, default_project = google.auth.default()
+except Exception:
+    default_project = None
+PROJECT_ID = default_project or "elysium-501518"
+
 BQ_SOURCE = f"{PROJECT_ID}.elysium.transactions_raw"
 BQ_DEST = f"{PROJECT_ID}.elysium.transactions_enriched"
 
@@ -46,9 +60,7 @@ BQ_DEST = f"{PROJECT_ID}.elysium.transactions_enriched"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("\n" + "=" * 60)
-result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
 print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
-print(f"   gcloud active project: {result.stdout.strip()}")
 print("=" * 60)
 
 # ──────────────────────────────────────────────

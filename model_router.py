@@ -13,14 +13,18 @@ GCP Config:
 """
 
 import re
-import subprocess
+import google.auth
 from google.cloud import aiplatform
 from vertexai.generative_models import GenerativeModel
 
 # ──────────────────────────────────────────────
-# CONFIG
+# CONFIG / GCP PROJECT RESOLUTION
 # ──────────────────────────────────────────────
-PROJECT_ID = "elysium-501518"
+try:
+    _, default_project = google.auth.default()
+except Exception:
+    default_project = None
+PROJECT_ID = default_project or "elysium-501518"
 LOCATION = "us-central1"
 
 FLASH_MODEL = "gemini-2.0-flash"
@@ -30,12 +34,10 @@ PRO_MODEL = "gemini-2.0-pro"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("=" * 60)
-result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
 print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
-print(f"   gcloud active project: {result.stdout.strip()}")
 print("=" * 60)
 
-# Initialize Vertex AI (uses application default credentials from Colab auth)
+# Initialize Vertex AI (uses application default credentials)
 aiplatform.init(project=PROJECT_ID, location=LOCATION)
 
 # Flash keywords — queries containing these route to the fast model

@@ -26,9 +26,14 @@ st.set_page_config(
 )
 
 # ──────────────────────────────────────────────
-# CONFIG
+# CONFIG / GCP PROJECT RESOLUTION
 # ──────────────────────────────────────────────
-PROJECT_ID = "elysium-501518"
+import google.auth
+try:
+    _, default_project = google.auth.default()
+except Exception:
+    default_project = None
+PROJECT_ID = default_project or "elysium-501518"
 
 # ──────────────────────────────────────────────
 # STYLING

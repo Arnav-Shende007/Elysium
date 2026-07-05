@@ -15,13 +15,18 @@ GCP Config:
 
 import re
 import time
-import subprocess
+import google.auth
 from google.cloud import bigquery, storage
 
 # ──────────────────────────────────────────────
-# CONFIG
+# CONFIG / GCP PROJECT RESOLUTION
 # ──────────────────────────────────────────────
-PROJECT_ID = "elysium-501518"
+try:
+    _, default_project = google.auth.default()
+except Exception:
+    default_project = None
+PROJECT_ID = default_project or "elysium-501518"
+
 BUCKET_NAME = "elysium-data"
 GCS_RAG_PREFIX = "rag/"
 BQ_RAG_DATASET = "rag"
@@ -33,9 +38,7 @@ EMBEDDING_MODEL = "text-embedding-004"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("=" * 60)
-result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
 print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
-print(f"   gcloud active project: {result.stdout.strip()}")
 print("=" * 60)
 
 bq_client = bigquery.Client(project=PROJECT_ID)

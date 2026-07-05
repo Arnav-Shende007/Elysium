@@ -13,13 +13,17 @@ GCP Config:
     BQ_TABLE    = "elysium.transactions_raw"
 """
 
+import google.auth
+
 # ──────────────────────────────────────────────
-# COLAB AUTHENTICATION (run this first)
+# COLAB AUTHENTICATION (run this first if in Colab)
 # ──────────────────────────────────────────────
-from google.colab import auth
-auth.authenticate_user()
-import subprocess
-subprocess.run(["gcloud", "config", "set", "project", "elysium-501518"])
+try:
+    from google.colab import auth
+    auth.authenticate_user()
+    print("✅ Authenticated in Google Colab context.")
+except ImportError:
+    pass
 
 import numpy as np
 import pandas as pd
@@ -28,9 +32,14 @@ import time
 from datetime import datetime, timedelta
 
 # ──────────────────────────────────────────────
-# CONFIG
+# CONFIG / GCP PROJECT RESOLUTION
 # ──────────────────────────────────────────────
-PROJECT_ID = "elysium-501518"
+try:
+    _, default_project = google.auth.default()
+except Exception:
+    default_project = None
+PROJECT_ID = default_project or "elysium-501518"
+
 BUCKET_NAME = "elysium-data"
 BQ_DATASET = "elysium"
 BQ_TABLE = f"{BQ_DATASET}.transactions_raw"
@@ -44,8 +53,6 @@ np.random.seed(42)
 # ──────────────────────────────────────────────
 print("=" * 60)
 print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
-result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
-print(f"   gcloud active project: {result.stdout.strip()}")
 print("=" * 60)
 
 # ──────────────────────────────────────────────

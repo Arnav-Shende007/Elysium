@@ -11,13 +11,18 @@ GCP Config:
     PROJECT_ID = "elysium-501518"
 """
 
-import subprocess
+import google.auth
 from google.cloud import bigquery
 
 # ──────────────────────────────────────────────
-# CONFIG
+# CONFIG / GCP PROJECT RESOLUTION
 # ──────────────────────────────────────────────
-PROJECT_ID = "elysium-501518"
+try:
+    _, default_project = google.auth.default()
+except Exception:
+    default_project = None
+PROJECT_ID = default_project or "elysium-501518"
+
 BQ_RAG_DATASET = "rag"
 BQ_EMBEDDINGS_TABLE = f"{PROJECT_ID}.{BQ_RAG_DATASET}.embeddings"
 EMBEDDING_MODEL = f"{PROJECT_ID}.{BQ_RAG_DATASET}.embedding_model"
@@ -26,9 +31,7 @@ EMBEDDING_MODEL = f"{PROJECT_ID}.{BQ_RAG_DATASET}.embedding_model"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("=" * 60)
-result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
 print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
-print(f"   gcloud active project: {result.stdout.strip()}")
 print("=" * 60)
 
 bq_client = bigquery.Client(project=PROJECT_ID)
