@@ -6,7 +6,7 @@ Review Cycle: Quarterly
 
 OVERVIEW
 --------
-This memo outlines the risk classification framework for countries where FinPulse AI clients maintain significant transaction exposure. Country risk scores are computed on a 1–10 scale using a weighted composite of six factors: regulatory environment (20%), political stability (15%), financial transparency (20%), sanctions exposure (15%), historical fraud incidence (15%), and AML enforcement strength (15%).
+This memo outlines the risk classification framework for countries where Elysium AI clients maintain significant transaction exposure. Country risk scores are computed on a 1–10 scale using a weighted composite of six factors: regulatory environment (20%), political stability (15%), financial transparency (20%), sanctions exposure (15%), historical fraud incidence (15%), and AML enforcement strength (15%).
 
 TIER 1 — ELEVATED RISK (Score 7.0–10.0)
 -----------------------------------------
@@ -60,4 +60,4 @@ ESCALATION PROCEDURES
 - Tier 2 countries: Enhanced Due Diligence (EDD) required for new relationships; transaction monitoring threshold lowered to $10,000
 - Tier 3 countries: Standard monitoring with quarterly portfolio review
 
-Contact: risk-intelligence@finpulse.internal
+Contact: risk-intelligence@elysium.internal

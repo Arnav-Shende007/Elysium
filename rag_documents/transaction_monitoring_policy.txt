@@ -8,7 +8,7 @@ Approved by: Chief Compliance Officer
 
 1. PURPOSE
 ----------
-This policy establishes the framework for monitoring financial transactions processed through FinPulse AI systems to detect, investigate, and report suspicious activity in compliance with the Bank Secrecy Act (BSA), USA PATRIOT Act, and applicable international anti-money laundering (AML) regulations.
+This policy establishes the framework for monitoring financial transactions processed through Elysium AI systems to detect, investigate, and report suspicious activity in compliance with the Bank Secrecy Act (BSA), USA PATRIOT Act, and applicable international anti-money laundering (AML) regulations.
 
 2. SCOPE
 --------
@@ -87,4 +87,4 @@ This policy applies to all transactions processed across all channels (wire tran
   - Annual independent testing: Conducted by Internal Audit or external consultant
   - Deficiency remediation SLA: 30 days for procedural gaps, 90 days for system enhancements
 
-Contact: compliance-monitoring@finpulse.internal
+Contact: compliance-monitoring@elysium.internal

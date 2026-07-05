@@ -1,4 +1,4 @@
-# 🔍 FinPulse AI — Real-Time Financial Risk Intelligence
+# 🔍 Elysium AI — Real-Time Financial Risk Intelligence
 
 > **An AI-powered risk intelligence platform** that combines GPU-accelerated data processing, RAG-enhanced knowledge retrieval, and intelligent model routing to deliver real-time financial risk analysis. Built for the Google Cloud × NVIDIA Hackathon.
 
@@ -13,7 +13,7 @@ Financial institutions process millions of transactions daily, requiring real-ti
 
 ## 💡 Solution
 
-FinPulse AI is an end-to-end risk intelligence platform that:
+Elysium AI is an end-to-end risk intelligence platform that:
 1. **Ingests and enriches** 500K+ transactions with GPU-accelerated ETL using RAPIDS cuDF
 2. **Embeds and indexes** institutional knowledge documents for instant RAG retrieval via BigQuery Vector Search
 3. **Intelligently routes** queries to Gemini Flash (fast/simple) or Gemini Pro (complex/RAG-grounded) based on query classification
@@ -53,7 +53,7 @@ FinPulse AI is an end-to-end risk intelligence platform that:
 
 ## 🛠️ Tech Stack
 
-| Technology | Role in FinPulse AI |
+| Technology | Role in Elysium AI |
 |---|---|
 | **Google Cloud Storage** | Raw data lake for transactions and RAG knowledge documents |
 | **BigQuery** | Scalable data warehouse; hosts raw, enriched, and embedding tables |
@@ -62,7 +62,7 @@ FinPulse AI is an end-to-end risk intelligence platform that:
 | **Vertex AI Gemini 2.0 Flash** | Fast inference for simple risk queries (scores, summaries) |
 | **Vertex AI Gemini 2.0 Pro** | Deep analysis with RAG-grounded context for complex queries |
 | **NVIDIA RAPIDS cuDF** | GPU-accelerated pandas for ETL — rolling averages, risk scoring |
-| **Vertex AI Workbench** | GPU notebook environment (L4) for data processing pipelines |
+| **Google Colab (GPU)** | GPU notebook environment for data processing pipelines |
 | **Cloud Run** | Serverless deployment of Streamlit dashboard |
 | **Streamlit** | Interactive frontend with charts, tables, and AI chat interface |
 
@@ -102,46 +102,42 @@ elysium/
 ## 🚀 Setup & Run
 
 ### Prerequisites
-- Google Cloud project with APIs enabled (BigQuery, Cloud Storage, Vertex AI, Cloud Run)
-- Service account with roles: BigQuery Admin, Storage Admin, Vertex AI User
-- Vertex AI Workbench instance with GPU (L4) for ETL pipeline
+- Google Cloud project (`elysium-501518`) with APIs enabled (BigQuery, Cloud Storage, Vertex AI, Cloud Run)
+- Google Colab with GPU runtime (T4) for ETL pipeline
 
-### Step 1: Data Generation (Vertex AI Workbench)
-```bash
-# In a Vertex AI Workbench notebook
-python generate_transactions.py
-```
-
-### Step 2: GPU ETL (Vertex AI Workbench)
+### Step 1: Data Generation (Google Colab)
 ```python
-# First cell:
-%load_ext cudf.pandas
-# Then run:
-python gpu_etl.py
+# Run generate_transactions.py — it handles Colab auth automatically
+!python generate_transactions.py
 ```
 
-### Step 3: RAG Pipeline (Vertex AI Workbench)
+### Step 2: GPU ETL (Google Colab with GPU)
+```python
+# gpu_etl.py installs cuDF and runs GPU-accelerated ETL
+!python gpu_etl.py
+```
+
+### Step 3: RAG Pipeline (Google Colab)
 ```bash
 # Upload documents to GCS
-gsutil cp rag_documents/*.txt gs://elysium-data/rag/
+!gsutil cp rag_documents/*.txt gs://elysium-data/rag/
 
 # Generate embeddings and create vector index
-python embed_documents.py
+!python embed_documents.py
 
 # Test retrieval
-python retrieve.py
+!python retrieve.py
 ```
 
 ### Step 4: Test Locally
 ```bash
-export GOOGLE_APPLICATION_CREDENTIALS="path/to/your-key.json"
 pip install -r requirements.txt
 streamlit run app/streamlit_app.py
 ```
 
 ### Step 5: Deploy to Cloud Run
 ```bash
-gcloud run deploy finpulse-ai --source . --region us-central1 --allow-unauthenticated
+gcloud run deploy elysium-ai --source . --region us-central1 --allow-unauthenticated
 ```
 
 ---

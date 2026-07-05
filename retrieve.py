@@ -1,5 +1,5 @@
 """
-FinPulse AI — Vector Search Retrieval Function
+Elysium AI — Vector Search Retrieval Function
 ================================================
 Retrieves relevant context from the RAG knowledge base using BigQuery VECTOR_SEARCH.
 
@@ -11,6 +11,7 @@ GCP Config:
     PROJECT_ID = "elysium-501518"
 """
 
+import subprocess
 from google.cloud import bigquery
 
 # ──────────────────────────────────────────────
@@ -20,6 +21,15 @@ PROJECT_ID = "elysium-501518"
 BQ_RAG_DATASET = "rag"
 BQ_EMBEDDINGS_TABLE = f"{PROJECT_ID}.{BQ_RAG_DATASET}.embeddings"
 EMBEDDING_MODEL = f"{PROJECT_ID}.{BQ_RAG_DATASET}.embedding_model"
+
+# ──────────────────────────────────────────────
+# VERIFY GCP PROJECT
+# ──────────────────────────────────────────────
+print("=" * 60)
+result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
+print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+print(f"   gcloud active project: {result.stdout.strip()}")
+print("=" * 60)
 
 bq_client = bigquery.Client(project=PROJECT_ID)
 
@@ -94,7 +104,7 @@ def retrieve_context(query: str, top_k: int = 5) -> tuple[str, list[str]]:
 # TEST
 # ──────────────────────────────────────────────
 if __name__ == "__main__":
-    print("=" * 60)
+    print("\n" + "=" * 60)
     print("Testing retrieve_context()...")
     print("=" * 60)
 

@@ -1,18 +1,19 @@
 """
-FinPulse AI — Gemini Model Router
+Elysium AI — Gemini Model Router
 ===================================
 Routes queries to Gemini Flash (fast/simple) or Gemini Pro (complex/RAG-grounded)
 based on query classification.
 
 Usage:
-    from model_router import ask_finpulse
-    answer, model_used = ask_finpulse("What is the current risk score for account ACC-00042?")
+    from model_router import ask_elysium
+    answer, model_used = ask_elysium("What is the current risk score for account ACC-00042?")
 
 GCP Config:
     PROJECT_ID = "elysium-501518"
 """
 
 import re
+import subprocess
 from google.cloud import aiplatform
 from vertexai.generative_models import GenerativeModel
 
@@ -25,7 +26,16 @@ LOCATION = "us-central1"
 FLASH_MODEL = "gemini-2.0-flash"
 PRO_MODEL = "gemini-2.0-pro"
 
-# Initialize Vertex AI
+# ──────────────────────────────────────────────
+# VERIFY GCP PROJECT
+# ──────────────────────────────────────────────
+print("=" * 60)
+result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
+print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+print(f"   gcloud active project: {result.stdout.strip()}")
+print("=" * 60)
+
+# Initialize Vertex AI (uses application default credentials from Colab auth)
 aiplatform.init(project=PROJECT_ID, location=LOCATION)
 
 # Flash keywords — queries containing these route to the fast model
@@ -46,8 +56,8 @@ FLASH_KEYWORDS = [
     "balance",
 ]
 
-# System prompt for FinPulse AI
-SYSTEM_PROMPT = """You are FinPulse AI, a senior financial risk analyst at a major financial institution.
+# System prompt for Elysium AI
+SYSTEM_PROMPT = """You are Elysium AI, a senior financial risk analyst at a major financial institution.
 You provide precise, data-driven analysis of financial risks, transactions, and market conditions.
 
 Guidelines:
@@ -80,9 +90,9 @@ def classify_query(query: str) -> str:
     return "pro"
 
 
-def ask_finpulse(query: str) -> tuple[str, str]:
+def ask_elysium(query: str) -> tuple[str, str]:
     """
-    Process a query through the FinPulse AI system.
+    Process a query through the Elysium AI system.
 
     - Flash path: Direct Gemini Flash call for simple/fast queries
     - Pro path: RAG retrieval + Gemini Pro for complex analysis queries
@@ -103,7 +113,7 @@ def ask_finpulse(query: str) -> tuple[str, str]:
 
         prompt = f"""{SYSTEM_PROMPT}
 
-You have been provided with the following context from the FinPulse knowledge base to help answer the user's question.
+You have been provided with the following context from the Elysium knowledge base to help answer the user's question.
 Use this context to ground your response with specific details, numbers, and policies.
 
 --- KNOWLEDGE BASE CONTEXT ---
@@ -142,7 +152,7 @@ Provide a concise, direct answer."""
 # ──────────────────────────────────────────────
 if __name__ == "__main__":
     print("=" * 60)
-    print("Testing FinPulse AI Model Router")
+    print("Testing Elysium AI Model Router")
     print("=" * 60)
 
     # Test 1: Should route to FLASH
@@ -152,7 +162,7 @@ if __name__ == "__main__":
     print(f"   Classification: {classify_query(query_flash)}")
 
     try:
-        answer1, model1 = ask_finpulse(query_flash)
+        answer1, model1 = ask_elysium(query_flash)
         print(f"   Model used: {model1}")
         print(f"   Answer preview: {answer1[:300]}...")
     except Exception as e:
@@ -165,7 +175,7 @@ if __name__ == "__main__":
     print(f"   Classification: {classify_query(query_pro)}")
 
     try:
-        answer2, model2 = ask_finpulse(query_pro)
+        answer2, model2 = ask_elysium(query_pro)
         print(f"   Model used: {model2}")
         print(f"   Answer preview: {answer2[:300]}...")
     except Exception as e:

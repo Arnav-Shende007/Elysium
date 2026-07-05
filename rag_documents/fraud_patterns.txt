@@ -6,7 +6,7 @@ Prepared by: Transaction Surveillance Team
 
 OVERVIEW
 --------
-This document catalogs the principal fraud typologies encountered across FinPulse AI's transaction monitoring ecosystem. Each pattern includes detection indicators, typical monetary thresholds, and recommended automated alert configurations.
+This document catalogs the principal fraud typologies encountered across Elysium AI's transaction monitoring ecosystem. Each pattern includes detection indicators, typical monetary thresholds, and recommended automated alert configurations.
 
 PATTERN 1: VELOCITY STACKING
 -----------------------------
@@ -83,4 +83,4 @@ When multiple patterns co-occur, apply multiplicative risk weighting:
   - 2 patterns detected: 2.5x multiplier
   - 3+ patterns detected: 5.0x multiplier, automatic case escalation to Level 3 investigator
 
-Contact: fraud-investigations@finpulse.internal
+Contact: fraud-investigations@elysium.internal

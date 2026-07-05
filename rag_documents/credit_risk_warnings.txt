@@ -6,7 +6,7 @@ Audience: Relationship Managers, Credit Analysts, Portfolio Managers
 
 OVERVIEW
 --------
-This memo identifies early warning signs of credit deterioration across FinPulse AI's lending portfolio. Timely identification of these signals enables proactive risk mitigation, including covenant renegotiation, collateral revaluation, or exposure reduction, before losses crystallize.
+This memo identifies early warning signs of credit deterioration across Elysium AI's lending portfolio. Timely identification of these signals enables proactive risk mitigation, including covenant renegotiation, collateral revaluation, or exposure reduction, before losses crystallize.
 
 CATEGORY 1: FINANCIAL STATEMENT INDICATORS
 --------------------------------------------
@@ -84,4 +84,4 @@ ESCALATION
 ----------
 Any borrower reaching Score 5.0+ must be reported to the Credit Risk Committee within 5 business days with a recommended action plan.
 
-Contact: credit-risk@finpulse.internal
+Contact: credit-risk@elysium.internal

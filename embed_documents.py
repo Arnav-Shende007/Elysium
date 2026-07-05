@@ -1,11 +1,12 @@
 """
-FinPulse AI — RAG Document Embedding Pipeline
+Elysium AI — RAG Document Embedding Pipeline
 ===============================================
 Reads documents from GCS, chunks them, generates embeddings via BigQuery ML,
 and creates a vector index for similarity search.
 
-Usage (Vertex AI Workbench notebook):
+Usage (Google Colab):
     Run this script after uploading RAG documents to GCS.
+    Requires prior Colab authentication (done in generate_transactions.py).
 
 GCP Config:
     PROJECT_ID  = "elysium-501518"
@@ -14,6 +15,7 @@ GCP Config:
 
 import re
 import time
+import subprocess
 from google.cloud import bigquery, storage
 
 # ──────────────────────────────────────────────
@@ -27,13 +29,22 @@ BQ_EMBEDDINGS_TABLE = f"{PROJECT_ID}.{BQ_RAG_DATASET}.embeddings"
 CHUNK_WORD_LIMIT = 300
 EMBEDDING_MODEL = "text-embedding-004"
 
+# ──────────────────────────────────────────────
+# VERIFY GCP PROJECT
+# ──────────────────────────────────────────────
+print("=" * 60)
+result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
+print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+print(f"   gcloud active project: {result.stdout.strip()}")
+print("=" * 60)
+
 bq_client = bigquery.Client(project=PROJECT_ID)
 storage_client = storage.Client(project=PROJECT_ID)
 
 # ──────────────────────────────────────────────
 # STEP 1: Read documents from GCS
 # ──────────────────────────────────────────────
-print("=" * 60)
+print("\n" + "=" * 60)
 print("STEP 1: Reading documents from GCS...")
 print("=" * 60)
 
@@ -159,13 +170,13 @@ t0 = time.time()
 # This uses the text-embedding-004 model
 embedding_model_sql = f"""
 CREATE OR REPLACE MODEL `{PROJECT_ID}.{BQ_RAG_DATASET}.embedding_model`
-REMOTE WITH CONNECTION `{PROJECT_ID}.us-central1.finpulse-connection`
+REMOTE WITH CONNECTION `{PROJECT_ID}.us-central1.elysium-connection`
 OPTIONS (ENDPOINT = '{EMBEDDING_MODEL}')
 """
 
 print("   Creating/updating embedding model...")
 print(f"   ⚠️  NOTE: You need a BigQuery ML remote connection first.")
-print(f"   If the model creation fails, create a connection named 'finpulse-connection'")
+print(f"   If the model creation fails, create a connection named 'elysium-connection'")
 print(f"   in BigQuery → Add → External Connection → Vertex AI.")
 print()
 

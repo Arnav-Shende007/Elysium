@@ -1,6 +1,6 @@
 MARKET VOLATILITY ALERT — URGENT BULLETIN
 ============================================
-Issued by: FinPulse AI Market Risk Desk
+Issued by: Elysium AI Market Risk Desk
 Date: January 8, 2025
 Alert Level: ELEVATED (Level 3 of 5)
 
@@ -69,5 +69,5 @@ RECOMMENDED ACTIONS
 5. Review stop-loss levels on all concentrated positions (>5% of portfolio)
 6. Next reassessment: 72 hours or upon VIX crossing 32.0 (whichever comes first)
 
-Issued by: Head of Market Risk, FinPulse AI
+Issued by: Head of Market Risk, Elysium AI
 Distribution: All portfolio managers, risk analysts, senior management

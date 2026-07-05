@@ -115,4 +115,4 @@ When a decision is made to exit a customer relationship:
   - Compliance officers: Annual regulatory update seminar + external conference attendance
   - Training completion tracked; non-completion escalated to line manager after 14 days
 
-Contact: kyc-compliance@finpulse.internal
+Contact: kyc-compliance@elysium.internal

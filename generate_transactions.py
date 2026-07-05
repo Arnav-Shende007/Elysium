@@ -1,16 +1,25 @@
 """
-FinPulse AI — Synthetic Transaction Data Generator
+Elysium AI — Synthetic Transaction Data Generator
 ====================================================
 Generates ~500,000 synthetic financial transactions and loads them into BigQuery.
 
-Usage (Vertex AI Workbench notebook):
+Usage (Google Colab):
     Run each section as a separate notebook cell.
+    This is the FIRST script to run — it handles Colab authentication.
 
 GCP Config:
     PROJECT_ID  = "elysium-501518"
     BUCKET      = "gs://elysium-data/"
-    BQ_TABLE    = "finpulse.transactions_raw"
+    BQ_TABLE    = "elysium.transactions_raw"
 """
+
+# ──────────────────────────────────────────────
+# COLAB AUTHENTICATION (run this first)
+# ──────────────────────────────────────────────
+from google.colab import auth
+auth.authenticate_user()
+import subprocess
+subprocess.run(["gcloud", "config", "set", "project", "elysium-501518"])
 
 import numpy as np
 import pandas as pd
@@ -23,7 +32,7 @@ from datetime import datetime, timedelta
 # ──────────────────────────────────────────────
 PROJECT_ID = "elysium-501518"
 BUCKET_NAME = "elysium-data"
-BQ_DATASET = "finpulse"
+BQ_DATASET = "elysium"
 BQ_TABLE = f"{BQ_DATASET}.transactions_raw"
 LOCAL_PARQUET = "transactions_raw.parquet"
 NUM_ROWS = 500_000
@@ -31,9 +40,18 @@ NUM_ROWS = 500_000
 np.random.seed(42)
 
 # ──────────────────────────────────────────────
-# STEP 1: Generate synthetic data
+# VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("=" * 60)
+print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
+print(f"   gcloud active project: {result.stdout.strip()}")
+print("=" * 60)
+
+# ──────────────────────────────────────────────
+# STEP 1: Generate synthetic data
+# ──────────────────────────────────────────────
+print("\n" + "=" * 60)
 print("STEP 1: Generating synthetic transaction data...")
 print("=" * 60)
 
@@ -173,7 +191,7 @@ try:
 
 except Exception as e:
     print(f"❌ BigQuery load failed: {e}")
-    print("   Make sure the 'finpulse' dataset exists in BigQuery and you have the right permissions.")
+    print("   Make sure the 'elysium' dataset exists in BigQuery and you have the right permissions.")
 
 print("\n" + "=" * 60)
 print("🎉 PHASE 1 COMPLETE — Data generation finished!")

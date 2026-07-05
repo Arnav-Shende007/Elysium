@@ -1,6 +1,6 @@
 SEMICONDUCTOR SECTOR OUTLOOK — Q1 2025
 ========================================
-Prepared by: FinPulse AI Sector Research
+Prepared by: Elysium AI Sector Research
 Date: January 2025
 Sector Rating: OVERWEIGHT (upgraded from Neutral)
 
@@ -67,4 +67,4 @@ INVESTMENT IMPLICATIONS FOR PORTFOLIO
 - Hedge geographic concentration risk through diversified foundry exposure
 - Set review trigger: Reassess if hyperscaler CapEx guidance declines >10% in upcoming earnings
 
-Contact: sector-research@finpulse.internal
+Contact: sector-research@elysium.internal

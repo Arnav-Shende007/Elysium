@@ -2,7 +2,7 @@ WIRE TRANSFER RISK INDICATORS — INTERNAL RISK MEMO
 ====================================================
 Classification: INTERNAL — Payment Operations & Compliance
 Effective Date: March 2025
-Scope: All domestic and cross-border wire transfers processed through FinPulse systems
+Scope: All domestic and cross-border wire transfers processed through Elysium systems
 
 OVERVIEW
 --------
@@ -68,4 +68,4 @@ EXCEPTIONS
 - Pre-approved recurring wires (e.g., payroll, vendor payments with established pattern) may receive a -2.0 score adjustment
 - VIP/institutional accounts with enhanced KYC may receive a -1.5 adjustment (requires annual recertification)
 
-Contact: wire-compliance@finpulse.internal
+Contact: wire-compliance@elysium.internal

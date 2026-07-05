@@ -1,15 +1,36 @@
 """
-FinPulse AI — GPU-Accelerated ETL Pipeline
+Elysium AI — GPU-Accelerated ETL Pipeline
 =============================================
 Enriches raw transaction data with rolling averages and risk scores using RAPIDS cuDF.
 
-Usage (Vertex AI Workbench notebook with GPU):
-    Cell 1: %load_ext cudf.pandas
-    Cell 2: Run this script
+Usage (Google Colab with GPU runtime):
+    Run this script after generate_transactions.py has loaded data into BigQuery.
+    Ensure Colab runtime is set to GPU (T4).
 
 GCP Config:
     PROJECT_ID = "elysium-501518"
 """
+
+# ──────────────────────────────────────────────
+# INSTALL RAPIDS cuDF (Colab doesn't have it pre-installed)
+# ──────────────────────────────────────────────
+import subprocess
+print("=" * 60)
+print("STEP 0: Installing RAPIDS cuDF for GPU acceleration...")
+print("=" * 60)
+subprocess.run(
+    ["pip", "install", "cudf-cu12", "--extra-index-url=https://pypi.nvidia.com", "--break-system-packages"],
+    check=True,
+)
+print("✅ cuDF installed successfully")
+
+# ──────────────────────────────────────────────
+# ENABLE cuDF-accelerated pandas
+# ──────────────────────────────────────────────
+# Using the programmatic equivalent of %load_ext cudf.pandas
+# so this works when run as a plain script (not just in a notebook cell)
+import cudf.pandas
+cudf.pandas.install()
 
 import time
 import pandas as pd
@@ -18,19 +39,22 @@ import pandas as pd
 # CONFIG
 # ──────────────────────────────────────────────
 PROJECT_ID = "elysium-501518"
-BQ_SOURCE = f"{PROJECT_ID}.finpulse.transactions_raw"
-BQ_DEST = f"{PROJECT_ID}.finpulse.transactions_enriched"
+BQ_SOURCE = f"{PROJECT_ID}.elysium.transactions_raw"
+BQ_DEST = f"{PROJECT_ID}.elysium.transactions_enriched"
 
 # ──────────────────────────────────────────────
-# NOTE: Run this in the FIRST notebook cell:
-#   %load_ext cudf.pandas
-# This enables GPU-accelerated pandas transparently.
+# VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
+print("\n" + "=" * 60)
+result = subprocess.run(["gcloud", "config", "get-value", "project"], capture_output=True, text=True)
+print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+print(f"   gcloud active project: {result.stdout.strip()}")
+print("=" * 60)
 
 # ──────────────────────────────────────────────
 # STEP 1: Load data from BigQuery
 # ──────────────────────────────────────────────
-print("=" * 60)
+print("\n" + "=" * 60)
 print("STEP 1: Loading data from BigQuery...")
 print("=" * 60)
 
