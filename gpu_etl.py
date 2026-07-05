@@ -60,7 +60,8 @@ BQ_DEST = f"{PROJECT_ID}.elysium.transactions_enriched"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("\n" + "=" * 60)
-print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+_, _project_id = google.auth.default()
+print(f"   Active project: {_project_id}")
 print("=" * 60)
 
 # ──────────────────────────────────────────────

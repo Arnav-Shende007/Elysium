@@ -38,7 +38,8 @@ EMBEDDING_MODEL = "text-embedding-004"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("=" * 60)
-print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+_, _project_id = google.auth.default()
+print(f"   Active project: {_project_id}")
 print("=" * 60)
 
 bq_client = bigquery.Client(project=PROJECT_ID)

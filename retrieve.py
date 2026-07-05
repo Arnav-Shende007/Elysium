@@ -31,7 +31,8 @@ EMBEDDING_MODEL = f"{PROJECT_ID}.{BQ_RAG_DATASET}.embedding_model"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("=" * 60)
-print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+_, _project_id = google.auth.default()
+print(f"   Active project: {_project_id}")
 print("=" * 60)
 
 bq_client = bigquery.Client(project=PROJECT_ID)

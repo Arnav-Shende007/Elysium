@@ -34,7 +34,8 @@ PRO_MODEL = "gemini-2.0-pro"
 # VERIFY GCP PROJECT
 # ──────────────────────────────────────────────
 print("=" * 60)
-print(f"🔐 Authenticated with GCP Project: {PROJECT_ID}")
+_, _project_id = google.auth.default()
+print(f"   Active project: {_project_id}")
 print("=" * 60)
 
 # Initialize Vertex AI (uses application default credentials)
