@@ -1,7 +1,8 @@
 """
 Elysium AI — Streamlit Dashboard & Chat Interface
 =====================================================
-A premium risk intelligence dashboard with live BigQuery data and AI-powered chat.
+A premium risk intelligence dashboard with live BigQuery data, interactive
+Plotly visualization, RAG-powered compliance copilot, and Louvain network graph analytics.
 
 Usage:
     streamlit run app/streamlit_app.py
@@ -19,6 +20,13 @@ import plotly.graph_objects as go
 import time
 import os
 import sys
+import tempfile
+import streamlit.components.v1 as components
+
+# Graph Analytics Imports
+import networkx as nx
+import community as community_louvain
+from pyvis.network import Network
 
 # ──────────────────────────────────────────────
 # PAGE CONFIG
@@ -347,6 +355,36 @@ def generate_mock_temporal_trend():
         "avg_risk_score": risk_scores
     })
 
+def generate_mock_graph_data():
+    np.random.seed(101)
+    num_txns = 150
+    types = ["wire", "card_purchase", "loan_payment", "investment", "transfer"]
+    countries = ["US", "India", "Singapore", "UK", "China", "Nigeria", "Myanmar", "Iran"]
+    
+    # Generate unique account IDs and customer IDs
+    accounts = [f"ACC-{np.random.randint(1000, 9999)}" for _ in range(30)]
+    customers = [f"CUS-{np.random.randint(1000, 9999)}" for _ in range(20)]
+    
+    data = []
+    for i in range(num_txns):
+        src = np.random.choice(accounts)
+        cust = np.random.choice(customers)
+            
+        data.append({
+            "transaction_id": f"TXN-{np.random.randint(10000000, 99999999)}",
+            "timestamp": pd.Timestamp("2025-06-15") - pd.Timedelta(hours=i*4),
+            "account_id": src,
+            "customer_id": cust,
+            "amount": float(np.round(np.random.uniform(1000, 80000), 2)),
+            "transaction_type": np.random.choice(types),
+            "merchant_category": "crypto" if i % 3 == 0 else "retail",
+            "country": np.random.choice(countries),
+            "fraud_flag": 1 if i % 10 == 0 else 0,
+            "volatility_index": float(np.round(np.random.uniform(0.5, 3.2), 2)),
+            "risk_score": float(np.round(np.random.uniform(0.0, 0.95), 4))
+        })
+    return pd.DataFrame(data)
+
 # ──────────────────────────────────────────────
 # DATA LOADING CONTROLLER
 # ──────────────────────────────────────────────
@@ -471,6 +509,31 @@ def load_temporal_trend():
     except Exception:
         return generate_mock_temporal_trend()
 
+@st.cache_data(ttl=300)
+def load_graph_transactions():
+    if not bq_client:
+        return generate_mock_graph_data()
+    try:
+        query = f"""
+        SELECT
+            transaction_id,
+            timestamp,
+            account_id,
+            customer_id,
+            amount,
+            transaction_type,
+            country,
+            risk_score,
+            volatility_index
+        FROM `{PROJECT_ID}.elysium.transactions_enriched`
+        WHERE risk_score >= 0.2
+        ORDER BY risk_score DESC
+        LIMIT 300
+        """
+        return bq_client.query(query).to_dataframe()
+    except Exception:
+        return generate_mock_graph_data()
+
 # ──────────────────────────────────────────────
 # HEADER RENDER
 # ──────────────────────────────────────────────
@@ -564,9 +627,10 @@ st.markdown(metric_html, unsafe_allow_html=True)
 # ──────────────────────────────────────────────
 # INTERACTIVE TABS
 # ──────────────────────────────────────────────
-tab_overview, tab_risk_details, tab_copilot = st.tabs([
+tab_overview, tab_risk_details, tab_graph, tab_copilot = st.tabs([
     "📊 Executive Summary", 
     "🚨 Deep Risk Analytics", 
+    "🕸️ Graph Network Analytics",
     "💬 RAG Compliance Copilot"
 ])
 
@@ -756,7 +820,141 @@ with tab_risk_details:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────
-# TAB 3: AI COPILOT
+# TAB 3: GRAPH NETWORK ANALYTICS
+# ──────────────────────────────────────────────
+with tab_graph:
+    st.markdown('<div class="data-section">', unsafe_allow_html=True)
+    st.markdown("### 🕸️ Interactive Transaction Network & Fraud Rings")
+    st.caption(
+        "Bipartite graph mapping Relationships between **Customer IDs** (source entities) and **Account IDs** (receivers). "
+        "Clustered dynamically using the **Louvain Modularity Clustering** algorithm to automatically isolate suspicious communities."
+    )
+    
+    # Graph control sliders
+    col_ctrl1, col_ctrl2 = st.columns(2)
+    with col_ctrl1:
+        risk_threshold = st.slider("Filter Minimum Edge Risk", 0.0, 0.9, 0.2, 0.05)
+    with col_ctrl2:
+        max_edges = st.slider("Max Displayed Nodes/Edges", 50, 400, 150, 25)
+
+    df_graph_raw = load_graph_transactions()
+    
+    # Filter dataset based on sliders
+    df_filtered = df_graph_raw[df_graph_raw['risk_score'] >= risk_threshold].head(max_edges)
+    
+    if df_filtered.empty:
+        st.info("No transaction nodes meet the current risk filter criteria.")
+    else:
+        # Build NetworkX graph
+        G = nx.Graph()
+        for _, row in df_filtered.iterrows():
+            cust = row['customer_id']
+            acc = row['account_id']
+            
+            if not G.has_node(cust):
+                G.add_node(cust, label=cust, type='customer')
+            if not G.has_node(acc):
+                G.add_node(acc, label=acc, type='account')
+                
+            if G.has_edge(cust, acc):
+                G[cust][acc]['weight'] += float(row['amount'])
+                G[cust][acc]['risk'] = max(G[cust][acc]['risk'], float(row['risk_score']))
+            else:
+                G.add_edge(cust, acc, weight=float(row['amount']), risk=float(row['risk_score']))
+        
+        # Louvain Modularity Partitioning
+        try:
+            partition = community_louvain.best_partition(G)
+        except Exception:
+            partition = {node: 0 for node in G.nodes()}
+            
+        # Draw PyVis Graph
+        net = Network(height="480px", width="100%", bgcolor="#ffffff", font_color="#0f172a", heading="")
+        
+        # Color mapping for communities
+        comm_colors = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6', '#f97316', '#a855f7']
+        
+        # Add nodes with custom community attributes
+        for node, attrs in G.nodes(data=True):
+            deg = G.degree(node)
+            size = 10 + (deg * 4)
+            comm_id = partition.get(node, 0)
+            color = comm_colors[comm_id % len(comm_colors)]
+            
+            node_type_str = "👤 Customer Node" if node.startswith("CUS") else "💳 Account Node"
+            title = f"{node_type_str}<br>Connections: {deg}<br>Louvain Modularity Ring: #{comm_id}"
+            
+            net.add_node(
+                node, 
+                label=f"{node}", 
+                title=title, 
+                color=color, 
+                size=size,
+                borderWidth=2,
+                borderWidthSelected=4
+            )
+            
+        # Add edges
+        for u, v, edge_attrs in G.edges(data=True):
+            val = abs(edge_attrs.get('weight', 1.0))
+            width = 1 + np.log1p(val) / 2
+            
+            risk = edge_attrs.get('risk', 0.0)
+            edge_color = "#f43f5e" if risk >= 0.5 else "#cbd5e1"
+            
+            net.add_edge(
+                u, v, 
+                width=width, 
+                color=edge_color, 
+                title=f"Transacted Volume: ${val:,.2f}<br>Peak Transaction Risk: {risk:.4f}"
+            )
+            
+        # Render graph HTML component
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp:
+            net.save_graph(tmp.name)
+            with open(tmp.name, 'r', encoding='utf-8') as f:
+                html_code = f.read()
+                components.html(html_code, height=500, scrolling=False)
+                
+        # Display Community detection analytics below graph
+        st.markdown("### 🕸️ Louvain Ring Risk Assessment Ledger")
+        st.caption("Modularity clusters sorted by aggregate vulnerability risk ratings.")
+        
+        comm_summary = []
+        for comm_id in set(partition.values()):
+            nodes_in_comm = [n for n, cid in partition.items() if cid == comm_id]
+            
+            # Find all transactions inside this community
+            comm_txns = df_filtered[
+                (df_filtered['account_id'].isin(nodes_in_comm)) | 
+                (df_filtered['customer_id'].isin(nodes_in_comm))
+            ]
+            
+            if not comm_txns.empty:
+                avg_comm_risk = comm_txns['risk_score'].mean()
+                total_comm_volume = comm_txns['amount'].abs().sum()
+                
+                comm_summary.append({
+                    "Community Ring": f"Fraud Syndicate Ring #{comm_id}",
+                    "Total Nodes": len(nodes_in_comm),
+                    "Customer Entities": len([n for n in nodes_in_comm if n.startswith("CUS")]),
+                    "Associated Bank Accounts": len([n for n in nodes_in_comm if n.startswith("ACC")]),
+                    "Aggregate Volume": total_comm_volume,
+                    "Vulnerability Risk Rating": avg_comm_risk
+                })
+                
+        df_comm = pd.DataFrame(comm_summary).sort_values("Vulnerability Risk Rating", ascending=False)
+        st.dataframe(
+            df_comm.style.format({
+                "Aggregate Volume": "${:,.2f}",
+                "Vulnerability Risk Rating": "{:.4f}"
+            }),
+            use_container_width=True
+        )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ──────────────────────────────────────────────
+# TAB 4: AI COPILOT
 # ──────────────────────────────────────────────
 with tab_copilot:
     st.markdown('<div class="data-section">', unsafe_allow_html=True)

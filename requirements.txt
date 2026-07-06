@@ -8,4 +8,8 @@ numpy>=1.24.0
 pyarrow>=14.0.0
 db-dtypes>=1.2.0
 plotly>=5.18.0
+networkx>=3.0
+python-louvain>=0.16
+pyvis>=0.3.1
+
 
