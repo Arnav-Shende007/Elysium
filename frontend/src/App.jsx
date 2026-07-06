@@ -310,6 +310,10 @@ export default function App() {
 
     return () => {
       clearTimeout(timer);
+      if (leafletInstance.current) {
+        leafletInstance.current.remove();
+        leafletInstance.current = null;
+      }
     };
   }, [activeTab, geographicalRisk, heatmapMetric]);
 
