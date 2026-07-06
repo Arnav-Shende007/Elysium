@@ -81,6 +81,39 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Dropdown filter states
+  const [timeRange, setTimeRange] = useState('7d');
+  const [temporalTimeRange, setTemporalTimeRange] = useState('12m');
+  const [heatmapMetric, setHeatmapMetric] = useState('risk');
+  const [companiesTimeRange, setCompaniesTimeRange] = useState('12m');
+
+  // Compute dynamic header metrics based on selected date filter
+  const activeMetrics = (() => {
+    const base = metrics.total_transactions > 0 ? metrics : {
+      total_transactions: 14284,
+      fraud_count: 342,
+      avg_risk_score: 0.28,
+      high_risk_count: 1208
+    };
+    if (timeRange === '30d') {
+      return {
+        total_transactions: base.total_transactions * 4.3,
+        fraud_count: base.fraud_count * 4.1,
+        avg_risk_score: base.avg_risk_score * 1.1,
+        high_risk_count: base.high_risk_count * 4.2
+      };
+    }
+    if (timeRange === '1y') {
+      return {
+        total_transactions: base.total_transactions * 50.7,
+        fraud_count: base.fraud_count * 46.5,
+        avg_risk_score: base.avg_risk_score * 1.21,
+        high_risk_count: base.high_risk_count * 51.6
+      };
+    }
+    return base;
+  })();
+
   // Load dashboard data on mount
   useEffect(() => {
     fetch(`${API_BASE}/api/metrics`).then(r => r.json()).then(setMetrics).catch(console.error);
@@ -146,6 +179,28 @@ export default function App() {
         'United Arab Emirates': 0.84
       };
 
+      const fallbackTxCount = {
+        'United States': 1420,
+        'United States of America': 1420,
+        'Canada': 450,
+        'Mexico': 230,
+        'Brazil': 350,
+        'United Kingdom': 890,
+        'Germany': 950,
+        'Russia': 410,
+        'Nigeria': 280,
+        'Iran': 120,
+        'China': 1800,
+        'India': 1500,
+        'Myanmar': 95,
+        'Japan': 620,
+        'Australia': 310,
+        'South Africa': 240,
+        'Singapore': 530,
+        'Saudi Arabia': 180,
+        'United Arab Emirates': 340
+      };
+
       const getCountryColor = (score) => {
         if (score === undefined || score === null) return 'rgba(239, 68, 68, 0.04)';
         if (score < 0.2) return 'rgba(239, 68, 68, 0.04)';
@@ -153,6 +208,16 @@ export default function App() {
         const r = Math.round(254 - (254 - 239) * ratio);
         const g = Math.round(226 - (226 - 68) * ratio);
         const b = Math.round(226 - (226 - 68) * ratio);
+        return `rgb(${r}, ${g}, ${b})`;
+      };
+
+      const getTxCountColor = (count) => {
+        if (count === undefined || count === null) return 'rgba(59, 130, 246, 0.04)';
+        if (count < 100) return 'rgba(59, 130, 246, 0.04)';
+        const ratio = Math.min(1, count / 2000);
+        const r = Math.round(239 - (239 - 30) * ratio);
+        const g = Math.round(246 - (246 - 41) * ratio);
+        const b = Math.round(255 - (255 - 59) * ratio);
         return `rgb(${r}, ${g}, ${b})`;
       };
 
@@ -164,21 +229,34 @@ export default function App() {
             style: (feature) => {
               const name = feature.properties.name || feature.properties.name_long || '';
               const match = geographicalRisk.find(r => r.country.toLowerCase() === name.toLowerCase());
-              const score = match ? match.avg_risk_score : (fallbackRisk[name] || 0.15);
-              return {
-                fillColor: getCountryColor(score),
-                weight: 1.2,
-                opacity: 1,
-                color: '#ffffff',
-                fillOpacity: 0.8
-              };
+              
+              if (heatmapMetric === 'risk') {
+                const score = match ? match.avg_risk_score : (fallbackRisk[name] || 0.15);
+                return {
+                  fillColor: getCountryColor(score),
+                  weight: 1.2,
+                  opacity: 1,
+                  color: '#ffffff',
+                  fillOpacity: 0.8
+                };
+              } else {
+                const count = match ? match.transaction_count : (fallbackTxCount[name] || 150);
+                return {
+                  fillColor: getTxCountColor(count),
+                  weight: 1.2,
+                  opacity: 1,
+                  color: '#ffffff',
+                  fillOpacity: 0.8
+                };
+              }
             },
             onEachFeature: (feature, layer) => {
               const name = feature.properties.name || feature.properties.name_long || '';
               const match = geographicalRisk.find(r => r.country.toLowerCase() === name.toLowerCase());
               const score = match ? match.avg_risk_score : (fallbackRisk[name] || 0.15);
+              const count = match ? match.transaction_count : (fallbackTxCount[name] || 150);
 
-              layer.bindTooltip(`
+              const tooltipHtml = heatmapMetric === 'risk' ? `
                 <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; line-height: 1.4;">
                   <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: #0f172a;">
                     <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444; margin-right: 4px;"></span>
@@ -188,7 +266,19 @@ export default function App() {
                     Risk Score <span style="font-weight: 700; color: #ef4444;">${score.toFixed(2)}</span>
                   </div>
                 </div>
-              `, {
+              ` : `
+                <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; line-height: 1.4;">
+                  <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: #0f172a;">
+                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #3b82f6; margin-right: 4px;"></span>
+                    ${name}
+                  </div>
+                  <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
+                    Transactions <span style="font-weight: 700; color: #3b82f6;">${count.toLocaleString()}</span>
+                  </div>
+                </div>
+              `;
+
+              layer.bindTooltip(tooltipHtml, {
                 direction: 'top',
                 sticky: true,
                 className: 'leaflet-tooltip-premium'
@@ -199,7 +289,7 @@ export default function App() {
                   const l = e.target;
                   l.setStyle({
                     weight: 2,
-                    color: '#7c3aed',
+                    color: heatmapMetric === 'risk' ? '#7c3aed' : '#3b82f6',
                     fillOpacity: 0.9
                   });
                   l.bringToFront();
@@ -221,7 +311,7 @@ export default function App() {
     return () => {
       clearTimeout(timer);
     };
-  }, [activeTab, geographicalRisk]);
+  }, [activeTab, geographicalRisk, heatmapMetric]);
 
   // Fetch and draw graph when controls change
   useEffect(() => {
@@ -490,11 +580,20 @@ export default function App() {
             <p className="page-subtitle">GPU-Accelerated Transaction Risk Scoring & Knowledge-Grounded Decision Engine</p>
           </header>
           <div className="header-controls">
-            <button className="date-picker-btn">
-              <Calendar size={15} />
-              <span>May 30 – Jun 05, 2025</span>
-              <ChevronDown size={14} />
-            </button>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Calendar size={15} style={{ position: 'absolute', left: '12px', pointerEvents: 'none', color: 'var(--text-secondary)' }} />
+              <select 
+                className="date-picker-btn" 
+                value={timeRange} 
+                onChange={(e) => setTimeRange(e.target.value)}
+                style={{ paddingLeft: '36px', appearance: 'none', cursor: 'pointer', height: '38px' }}
+              >
+                <option value="7d">May 30 – Jun 05, 2025 (7 Days)</option>
+                <option value="30d">May 06 – Jun 05, 2025 (30 Days)</option>
+                <option value="1y">Jan 01 – Dec 31, 2025 (1 Year)</option>
+              </select>
+              <ChevronDown size={14} style={{ position: 'absolute', right: '12px', pointerEvents: 'none', color: 'var(--text-secondary)' }} />
+            </div>
             <button className="bell-icon-btn">
               <Bell size={16} />
             </button>
@@ -510,7 +609,7 @@ export default function App() {
                 <Activity size={18} />
               </div>
             </div>
-            <div className="metric-value">500,000</div>
+            <div className="metric-value">{activeMetrics.total_transactions.toLocaleString()}</div>
             <div className="metric-trend trend-up">
               <span>▲ 12.4%</span>
               <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>vs last month</span>
@@ -558,7 +657,7 @@ export default function App() {
                 </svg>
               </div>
             </div>
-            <div className="metric-value">7,500</div>
+            <div className="metric-value">{activeMetrics.fraud_count.toLocaleString()}</div>
             <div className="metric-trend trend-down">
               <span>▼ 4.2%</span>
               <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>vs baseline</span>
@@ -602,7 +701,7 @@ export default function App() {
                 <Gauge size={18} />
               </div>
             </div>
-            <div className="metric-value">0.1842</div>
+            <div className="metric-value">{activeMetrics.avg_risk_score.toFixed(4)}</div>
             <div className="metric-trend trend-up" style={{ color: 'var(--color-success)' }}>
               <span>▼ 0.005</span>
               <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>global deviation</span>
@@ -646,7 +745,7 @@ export default function App() {
                 <Bell size={18} />
               </div>
             </div>
-            <div className="metric-value">12,450</div>
+            <div className="metric-value">{activeMetrics.high_risk_count.toLocaleString()}</div>
             <div className="metric-trend trend-down">
               <span>▼ 2.1%</span>
               <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>critical events</span>
@@ -700,10 +799,19 @@ export default function App() {
                       <p className="panel-subtitle">Transaction Volume (heights) against average risk scores (line) per month.</p>
                     </div>
                   </div>
-                  <button className="date-picker-btn" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
-                    <span>Last 12 Months</span>
-                    <ChevronDown size={12} />
-                  </button>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <select 
+                      className="date-picker-btn" 
+                      value={temporalTimeRange} 
+                      onChange={(e) => setTemporalTimeRange(e.target.value)}
+                      style={{ padding: '6px 28px 6px 12px', fontSize: '0.8rem', appearance: 'none', cursor: 'pointer' }}
+                    >
+                      <option value="12m">Last 12 Months</option>
+                      <option value="6m">Last 6 Months</option>
+                      <option value="3m">Last 3 Months</option>
+                    </select>
+                    <ChevronDown size={12} style={{ position: 'absolute', right: '8px', pointerEvents: 'none', color: 'var(--text-secondary)' }} />
+                  </div>
                 </div>
 
                 {/* SVG Legend */}
@@ -723,23 +831,30 @@ export default function App() {
                 
                 <div className="chart-container-placeholder" style={{ border: 'none', background: 'transparent', display: 'block', height: '220px' }}>
                   {(() => {
-                    const temporalDataMock = [
-                      { month: '01', volume: 280000 + Math.sin(simulationTick * 0.3 + 0) * 15000, risk: 0.22 + Math.sin(simulationTick * 0.4 + 0) * 0.02 },
-                      { month: '02', volume: 320000 + Math.sin(simulationTick * 0.3 + 1) * 15000, risk: 0.26 + Math.sin(simulationTick * 0.4 + 1) * 0.02 },
-                      { month: '03', volume: 360000 + Math.sin(simulationTick * 0.3 + 2) * 15000, risk: 0.28 + Math.sin(simulationTick * 0.4 + 2) * 0.02 },
-                      { month: '04', volume: 360000 + Math.sin(simulationTick * 0.3 + 3) * 15000, risk: 0.27 + Math.sin(simulationTick * 0.4 + 3) * 0.02 },
-                      { month: '05', volume: 400000 + Math.sin(simulationTick * 0.3 + 4) * 15000, risk: 0.31 + Math.sin(simulationTick * 0.4 + 4) * 0.02 },
-                      { month: '06', volume: 400000 + Math.sin(simulationTick * 0.3 + 5) * 15000, risk: 0.30 + Math.sin(simulationTick * 0.4 + 5) * 0.02 },
-                      { month: '07', volume: 450000 + Math.sin(simulationTick * 0.3 + 6) * 15000, risk: 0.34 + Math.sin(simulationTick * 0.4 + 6) * 0.02 },
-                      { month: '08', volume: 450000 + Math.sin(simulationTick * 0.3 + 7) * 15000, risk: 0.35 + Math.sin(simulationTick * 0.4 + 7) * 0.02 },
-                      { month: '09', volume: 490000 + Math.sin(simulationTick * 0.3 + 8) * 15000, risk: 0.38 + Math.sin(simulationTick * 0.4 + 8) * 0.02 },
-                      { month: '10', volume: 530000 + Math.sin(simulationTick * 0.3 + 9) * 15000, risk: 0.39 + Math.sin(simulationTick * 0.4 + 9) * 0.02 },
-                      { month: '11', volume: 590000 + Math.sin(simulationTick * 0.3 + 10) * 15000, risk: 0.44 + Math.sin(simulationTick * 0.4 + 10) * 0.02 },
-                      { month: '12', volume: 490000 + Math.sin(simulationTick * 0.3 + 11) * 15000, risk: 0.38 + Math.sin(simulationTick * 0.4 + 11) * 0.02 }
+                    const fullData = [
+                      { month: 'Jan', volume: 280000 + Math.sin(simulationTick * 0.3 + 0) * 15000, risk: 0.22 + Math.sin(simulationTick * 0.4 + 0) * 0.02 },
+                      { month: 'Feb', volume: 320000 + Math.sin(simulationTick * 0.3 + 1) * 15000, risk: 0.26 + Math.sin(simulationTick * 0.4 + 1) * 0.02 },
+                      { month: 'Mar', volume: 360000 + Math.sin(simulationTick * 0.3 + 2) * 15000, risk: 0.28 + Math.sin(simulationTick * 0.4 + 2) * 0.02 },
+                      { month: 'Apr', volume: 360000 + Math.sin(simulationTick * 0.3 + 3) * 15000, risk: 0.27 + Math.sin(simulationTick * 0.4 + 3) * 0.02 },
+                      { month: 'May', volume: 400000 + Math.sin(simulationTick * 0.3 + 4) * 15000, risk: 0.31 + Math.sin(simulationTick * 0.4 + 4) * 0.02 },
+                      { month: 'Jun', volume: 400000 + Math.sin(simulationTick * 0.3 + 5) * 15000, risk: 0.30 + Math.sin(simulationTick * 0.4 + 5) * 0.02 },
+                      { month: 'Jul', volume: 450000 + Math.sin(simulationTick * 0.3 + 6) * 15000, risk: 0.34 + Math.sin(simulationTick * 0.4 + 6) * 0.02 },
+                      { month: 'Aug', volume: 450000 + Math.sin(simulationTick * 0.3 + 7) * 15000, risk: 0.35 + Math.sin(simulationTick * 0.4 + 7) * 0.02 },
+                      { month: 'Sep', volume: 490000 + Math.sin(simulationTick * 0.3 + 8) * 15000, risk: 0.38 + Math.sin(simulationTick * 0.4 + 8) * 0.02 },
+                      { month: 'Oct', volume: 530000 + Math.sin(simulationTick * 0.3 + 9) * 15000, risk: 0.39 + Math.sin(simulationTick * 0.4 + 9) * 0.02 },
+                      { month: 'Nov', volume: 590000 + Math.sin(simulationTick * 0.3 + 10) * 15000, risk: 0.44 + Math.sin(simulationTick * 0.4 + 10) * 0.02 },
+                      { month: 'Dec', volume: 490000 + Math.sin(simulationTick * 0.3 + 11) * 15000, risk: 0.38 + Math.sin(simulationTick * 0.4 + 11) * 0.02 }
                     ];
 
+                    const sliceSize = temporalTimeRange === '3m' ? 3 : temporalTimeRange === '6m' ? 6 : 12;
+                    const temporalDataMock = fullData.slice(-sliceSize);
+
                     const maxVol = 600000;
-                    const maxRisk = 0.50; // Increased slightly to keep fluctuations fully inside viewport
+                    const maxRisk = 0.50;
+
+                    const pointsCount = temporalDataMock.length;
+                    const spacing = 700 / (pointsCount - 1 || 1);
+                    const getX = (idx) => 50 + idx * spacing;
 
                     return (
                       <svg width="100%" height="220" viewBox="0 0 800 220" style={{ overflow: 'visible' }}>
@@ -770,7 +885,7 @@ export default function App() {
                         
                         {/* Bars for Transaction Volume */}
                         {temporalDataMock.map((item, idx) => {
-                          const x = 70 + idx * 60;
+                          const x = getX(idx);
                           const height = (item.volume / maxVol) * 160;
                           return (
                             <g key={item.month}>
@@ -800,9 +915,9 @@ export default function App() {
                         {/* Path for Average Risk Score (Line Segments for smooth CSS transition) */}
                         {temporalDataMock.slice(0, -1).map((item, idx) => {
                           const nextItem = temporalDataMock[idx + 1];
-                          const x1 = 70 + idx * 60;
+                          const x1 = getX(idx);
                           const y1 = 190 - (item.risk / maxRisk) * 160;
-                          const x2 = 70 + (idx + 1) * 60;
+                          const x2 = getX(idx + 1);
                           const y2 = 190 - (nextItem.risk / maxRisk) * 160;
                           return (
                             <line 
@@ -821,7 +936,7 @@ export default function App() {
 
                         {/* Circle nodes for Risk Score */}
                         {temporalDataMock.map((item, idx) => {
-                          const x = 70 + idx * 60;
+                          const x = getX(idx);
                           const y = 190 - (item.risk / maxRisk) * 160;
                           return (
                             <circle 
@@ -1045,94 +1160,113 @@ export default function App() {
                       <h2 className="panel-title">Global Risk Heatmap</h2>
                       <p className="panel-subtitle">Risk intensity by country (higher intensity = higher risk)</p>
                     </div>
-                  </div>
-                  <button className="date-picker-btn" style={{ padding: '8px 16px', fontSize: '0.8rem', fontWeight: 700, borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>Risk Score</span>
-                    <ChevronDown size={12} />
-                  </button>
-                </div>
-
-                {/* Map Container */}
-                <div style={{ position: 'relative', flexGrow: 1, overflow: 'hidden', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                  
-                  {/* Leaflet Map Div */}
-                  <div 
-                    id="leaflet-risk-map" 
-                    ref={leafletMapRef}
-                    style={{ width: '100%', height: '100%', minHeight: '320px', background: '#f8fafc', zIndex: 1 }}
-                  ></div>
-
-                  {/* Zoom Controls */}
-                  <div style={{
-                    position: 'absolute',
-                    left: '16px',
-                    top: '16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1px',
-                    background: '#ffffff',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    boxShadow: '0 4px 10px rgba(15, 23, 42, 0.05)',
-                    zIndex: 10
-                  }}>
-                    <button 
-                      onClick={() => { if (leafletInstance.current) leafletInstance.current.zoomIn(); }}
-                      style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-secondary)' }}
-                    >
-                      +
-                    </button>
-                    <div style={{ height: '1px', backgroundColor: 'var(--border-color)' }}></div>
-                    <button 
-                      onClick={() => { if (leafletInstance.current) leafletInstance.current.zoomOut(); }}
-                      style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-secondary)' }}
-                    >
-                      -
-                    </button>
+                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                      <select 
+                        className="date-picker-btn" 
+                        value={heatmapMetric} 
+                        onChange={(e) => setHeatmapMetric(e.target.value)}
+                        style={{ padding: '8px 28px 8px 16px', fontSize: '0.8rem', fontWeight: 700, borderRadius: '24px', appearance: 'none', cursor: 'pointer' }}
+                      >
+                        <option value="risk">Risk Score</option>
+                        <option value="count">Transaction Count</option>
+                      </select>
+                      <ChevronDown size={12} style={{ position: 'absolute', right: '12px', pointerEvents: 'none', color: 'var(--text-secondary)' }} />
+                    </div>
                   </div>
 
-                  {/* Legend */}
-                  <div style={{
-                    position: 'absolute',
-                    left: '16px',
-                    bottom: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    color: 'var(--text-secondary)',
-                    zIndex: 10
-                  }}>
-                    <span>Low Risk</span>
+                  {/* Map Container */}
+                  <div style={{ position: 'relative', flexGrow: 1, overflow: 'hidden', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                    
+                    {/* Leaflet Map Div */}
+                    <div 
+                      id="leaflet-risk-map" 
+                      ref={leafletMapRef}
+                      style={{ width: '100%', height: '100%', minHeight: '320px', background: '#f8fafc', zIndex: 1 }}
+                    ></div>
+
+                    {/* Zoom Controls */}
                     <div style={{
-                      width: '120px',
-                      height: '8px',
-                      borderRadius: '4px',
-                      background: 'linear-gradient(to right, rgba(239, 68, 68, 0.04), rgb(239, 68, 68))',
-                      border: '1px solid var(--border-color)'
-                    }}></div>
-                    <span>High Risk</span>
+                      position: 'absolute',
+                      left: '16px',
+                      top: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '1px',
+                      background: '#ffffff',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      boxShadow: '0 4px 10px rgba(15, 23, 42, 0.05)',
+                      zIndex: 10
+                    }}>
+                      <button 
+                        onClick={() => { if (leafletInstance.current) leafletInstance.current.zoomIn(); }}
+                        style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-secondary)' }}
+                      >
+                        +
+                      </button>
+                      <div style={{ height: '1px', backgroundColor: 'var(--border-color)' }}></div>
+                      <button 
+                        onClick={() => { if (leafletInstance.current) leafletInstance.current.zoomOut(); }}
+                        style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-secondary)' }}
+                      >
+                        -
+                      </button>
+                    </div>
+
+                    {/* Legend */}
+                    <div style={{
+                      position: 'absolute',
+                      left: '16px',
+                      bottom: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: 'var(--text-secondary)',
+                      zIndex: 10
+                    }}>
+                      <span>{heatmapMetric === 'risk' ? 'Low Risk' : 'Low Volume'}</span>
+                      <div style={{
+                        width: '120px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        background: heatmapMetric === 'risk' 
+                          ? 'linear-gradient(to right, rgba(239, 68, 68, 0.04), rgb(239, 68, 68))'
+                          : 'linear-gradient(to right, rgba(59, 130, 246, 0.04), rgb(59, 130, 246))',
+                        border: '1px solid var(--border-color)'
+                      }}></div>
+                      <span>{heatmapMetric === 'risk' ? 'High Risk' : 'High Volume'}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-                {/* Risk by Top Companies line graph */}
-              <div className="glass-panel panel-container" style={{ display: 'flex', flexDirection: 'column', height: '420px', padding: '24px' }}>
-                <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '14px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
-                      <Building2 size={20} />
+                  {/* Risk by Top Companies line graph */}
+                <div className="glass-panel panel-container" style={{ display: 'flex', flexDirection: 'column', height: '420px', padding: '24px' }}>
+                  <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+                        <Building2 size={20} />
+                      </div>
+                      <div>
+                        <h2 className="panel-title">Risk by Top Companies</h2>
+                        <p className="panel-subtitle">Average risk score by top 10 companies</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="panel-title">Risk by Top Companies</h2>
-                      <p className="panel-subtitle">Average risk score by top 10 companies</p>
+                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                      <select 
+                        className="date-picker-btn" 
+                        value={companiesTimeRange} 
+                        onChange={(e) => setCompaniesTimeRange(e.target.value)}
+                        style={{ padding: '8px 28px 8px 16px', fontSize: '0.8rem', fontWeight: 700, borderRadius: '24px', appearance: 'none', cursor: 'pointer' }}
+                      >
+                        <option value="12m">Last 12 Months</option>
+                        <option value="6m">Last 6 Months</option>
+                        <option value="30d">Last 30 Days</option>
+                      </select>
+                      <ChevronDown size={12} style={{ position: 'absolute', right: '12px', pointerEvents: 'none', color: 'var(--text-secondary)' }} />
                     </div>
                   </div>
-                  <button className="date-picker-btn" style={{ padding: '8px 16px', fontSize: '0.8rem', fontWeight: 700, borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>Last 12 Months</span>
-                    <ChevronDown size={12} />
-                  </button>
                 </div>
 
                 {/* List Container */}
@@ -1151,9 +1285,10 @@ export default function App() {
                       { name: 'Credex Technologies', icon: <Gauge size={12} />, score: 0.28 }
                     ];
 
+                    const multiplier = companiesTimeRange === '30d' ? 0.65 : companiesTimeRange === '6m' ? 0.82 : 1.0;
                     const simulatedCompanies = companies.map((c, idx) => {
                       const wave = Math.sin(simulationTick * 0.4 + idx) * 0.015;
-                      const score = Math.max(0.1, Math.min(0.99, c.score + wave));
+                      const score = Math.max(0.1, Math.min(0.99, (c.score * multiplier) + wave));
                       return { ...c, score };
                     });
 
