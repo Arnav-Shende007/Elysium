@@ -17,7 +17,8 @@ Elysium AI is an end-to-end risk intelligence platform that:
 1. **Ingests and enriches** 500K+ transactions with GPU-accelerated ETL using RAPIDS cuDF
 2. **Embeds and indexes** institutional knowledge documents for instant RAG retrieval via BigQuery Vector Search
 3. **Intelligently routes** queries to Gemini Flash (fast/simple) or Gemini Pro (complex/RAG-grounded) based on query classification
-4. **Visualizes** risk distributions and high-risk transactions in a real-time Streamlit dashboard deployed on Cloud Run
+4. **Isolates Fraud Rings** using bipartite graph structures (Customer ➔ Account), running the **Louvain Modularity Clustering** algorithm to isolate coordinated fraud syndicates
+5. **Visualizes** risk metrics, temporal trends, modular communities, and interactive network graphs in a premium, light-themed Streamlit dashboard deployed on Cloud Run (with offline simulated demo support)
 
 ---
 
@@ -45,7 +46,8 @@ Elysium AI is an end-to-end risk intelligence platform that:
                                          ▼
                     ┌──────────────────────────────────────────────┐
                     │         Streamlit Dashboard (Cloud Run)      │
-                    │   📊 Risk Charts | 🚨 Alerts | 💬 AI Chat   │
+                    │   📊 Risk Charts  | 🕸️ Graph Rings           │
+                    │   🚨 Alerts       | 💬 AI Chat (Sim Fallback)│
                     └──────────────────────────────────────────────┘
 ```
 
@@ -62,9 +64,13 @@ Elysium AI is an end-to-end risk intelligence platform that:
 | **Vertex AI Gemini 2.0 Flash** | Fast inference for simple risk queries (scores, summaries) |
 | **Vertex AI Gemini 2.0 Pro** | Deep analysis with RAG-grounded context for complex queries |
 | **NVIDIA RAPIDS cuDF** | GPU-accelerated pandas for ETL — rolling averages, risk scoring |
+| **NetworkX** | In-memory graph modeling of bipartite transactional relations |
+| **python-louvain (Louvain)** | Community detection algorithm to partition accounts into fraud rings |
+| **PyVis** | Renders HTML/JS interactive, draggable, zoomable network graphs |
 | **Google Colab (GPU)** | GPU notebook environment for data processing pipelines |
 | **Cloud Run** | Serverless deployment of Streamlit dashboard |
-| **Streamlit** | Interactive frontend with charts, tables, and AI chat interface |
+| **Streamlit** | Premium frontend with custom CSS, Plotly figures, and RAG chat interface |
+
 
 ---
 
@@ -134,6 +140,9 @@ elysium/
 pip install -r requirements.txt
 streamlit run app/streamlit_app.py
 ```
+
+> [!TIP]
+> **Offline Demo Mode:** If you run the dashboard locally without Google Cloud credentials (ADC) configured, the application automatically switches to **Offline Fallback Mode**. The metrics, charts, interactive graph, and chat copilot will operate on simulated mock data, allowing you to instantly preview all visual features without any cloud setup!
 
 ### Step 5: Deploy to Cloud Run
 ```bash
