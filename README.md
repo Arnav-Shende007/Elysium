@@ -153,9 +153,9 @@ gcloud run deploy elysium-ai --source . --region us-central1 --allow-unauthentic
 
 ---
 
-## 👤 Team
+## 👤 Team Arshar
 
-**Aryan Medigeri** — Solo participant
+**Sakshi Sharan** **Aryan Medigeri** **Arnav Shende**
 
 ---
 
